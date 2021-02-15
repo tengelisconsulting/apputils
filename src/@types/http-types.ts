@@ -16,5 +16,6 @@ export interface AppHttpRequest {
 export interface AppHttpResponse<T> {
   data?: T;
   status: number;
+  ok: boolean;
   error?: string;
 }

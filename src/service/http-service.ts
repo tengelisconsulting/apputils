@@ -51,12 +51,14 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
     return {
       data,
       status: response.status,
+      ok: true,
     };
   } catch (e) {
     console.trace("req failed ", req, e)
     return {
       status: 0,
       error: e,
+      ok: false,
     };
   }
 }
