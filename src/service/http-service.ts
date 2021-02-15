@@ -56,6 +56,13 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
         sessionToken: response.headers[SET_SESSION_HEADER],
       });
     }
+    if (!response.ok) {
+      return {
+        status: response.status,
+        ok: false,
+        error: await response.text(),
+      };
+    }
     const data = await response.json();
     return {
       data,
