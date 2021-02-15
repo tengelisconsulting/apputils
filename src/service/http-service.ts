@@ -104,5 +104,6 @@ const requestFactoryNoData = (method: string) =>
 export const HttpService = {
   httpGet: requestFactoryNoData("GET"),
   httpPost: requestFactoryWithData("POST"),
-  httpPostNoData: requestFactoryNoData("POST"),
+  httpPut: requestFactoryWithData("PUT"),
+  httpPutNoData: requestFactoryNoData("PUT"),
 };
