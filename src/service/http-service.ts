@@ -1,4 +1,95 @@
-export function hi() {
-  console.log("hi");
-  return "hey";
+import { AppHttpRequest, AppHttpResponse } from "src/@types/http-types";
+import shallowMerge from "src/util/obj";
+import { HttpState } from "src/state/http-state";
+import { AuthState } from "src/state/auth-state";
+
+
+const baseReqDefaults: Partial<AppHttpRequest> = {
+  cache: "default",
+  credentials: "include",
+  headers: {
+    'Content-type': 'application/json',
+  },
+};
+
+const getAuthedHeaders = () => ({
+  "Authorization": `Bearer ${AuthState.get().sessionToken}`,
+});
+
+async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
+  const headers = new Headers(
+    shallowMerge(
+      req.headers,
+      req.noAuth
+        ? {}
+        : getAuthedHeaders()
+    )
+  );
+  const reqParams = shallowMerge(
+    {
+      method: req.method,
+      headers,
+    },
+    req.data
+      ? {
+        body: req.isRawData
+          ? req.data
+          : JSON.stringify(req.data)}
+      : {},
+  );
+  const baseUrl = HttpState.get().baseUrl;
+  const url = `${baseUrl}/${req.path}`;
+  const request = new Request(url, reqParams);
+  const requestInit: RequestInit = {
+    cache: req.cache,
+    mode: req.mode,
+    credentials: req.credentials,
+  };
+  try {
+    const response = await fetch(request, requestInit);
+    const data = await response.json();
+    return {
+      data,
+      status: response.status,
+    };
+  } catch (e) {
+    console.trace("req failed ", req, e)
+    return {
+      status: 0,
+      error: e,
+    };
+  }
 }
+
+const requestFactoryWithData = (method: string) =>
+  <D, R>(path: string) =>
+  (data: D): Promise<AppHttpResponse<R>> =>
+  doRequest(
+    shallowMerge(
+      {},
+      baseReqDefaults,
+      {
+        method,
+        path,
+        data,
+      },
+    ) as AppHttpRequest
+  );
+
+const requestFactoryNoData = (method: string) =>
+  <R>(path: string) =>
+  (): Promise<AppHttpResponse<R>> =>
+  doRequest(
+    shallowMerge(
+      {},
+      baseReqDefaults,
+      {
+        method,
+        path,
+      },
+    ) as AppHttpRequest
+  );
+
+export const httpGet = requestFactoryNoData("GET");
+export const httpPost = requestFactoryWithData("POST");
+export const httpPostNoData = requestFactoryNoData("POST");
