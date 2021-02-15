@@ -1,7 +1,7 @@
-import { AppHttpRequest, AppHttpResponse } from "src/@types/http-types";
-import shallowMerge from "src/util/obj";
-import { HttpState } from "src/state/http-state";
-import { AuthState } from "src/state/auth-state";
+import { AppHttpRequest, AppHttpResponse } from "../@types/http-types";
+import shallowMerge from "../util/obj";
+import { HttpState } from "../state/http-state";
+import { AuthState } from "../state/auth-state";
 
 
 const baseReqDefaults: Partial<AppHttpRequest> = {
