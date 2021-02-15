@@ -18,10 +18,11 @@ export function makeState<S>(
     // update the state, which also triggers
     // any update listeners to fire
     update: (stateUpdate: Partial<S>): void => {
-      Object.values(updateCbs).forEach((updateFn) => {
-        updateFn(stateUpdate);
-      });
+      const oldState = {...impl.state};
       impl.state = shallowMerge(impl.state, stateUpdate);
+      Object.values(updateCbs).forEach((updateFn) => {
+        updateFn(oldState);
+      });
     },
 
     // add a listener for state updates
