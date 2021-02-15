@@ -90,6 +90,8 @@ const requestFactoryNoData = (method: string) =>
     ) as AppHttpRequest
   );
 
-export const httpGet = requestFactoryNoData("GET");
-export const httpPost = requestFactoryWithData("POST");
-export const httpPostNoData = requestFactoryNoData("POST");
+export const HttpService = {
+  httpGet: requestFactoryNoData("GET"),
+  httpPost: requestFactoryWithData("POST"),
+  httpPostNoData: requestFactoryNoData("POST"),
+};
