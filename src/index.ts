@@ -1,1 +1,1 @@
-export { hi } from "src/service/http-service";
+export { hi } from "./service/http-service";
