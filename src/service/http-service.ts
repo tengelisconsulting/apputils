@@ -4,6 +4,8 @@ import { HttpState } from "../state/http-state";
 import { AuthState } from "../state/auth-state";
 
 
+const SET_SESSION_HEADER = "set-session-token";
+
 const baseReqDefaults: Partial<AppHttpRequest> = {
   cache: "default",
   credentials: "include",
@@ -47,6 +49,13 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
   };
   try {
     const response = await fetch(request, requestInit);
+    // we check for an updated session header
+    // on every successful request
+    if (response.headers[SET_SESSION_HEADER]) {
+      AuthState.update({
+        sessionToken: response.headers[SET_SESSION_HEADER],
+      });
+    }
     const data = await response.json();
     return {
       data,
