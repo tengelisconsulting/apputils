@@ -40,7 +40,7 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
       : {},
   );
   const baseUrl = HttpState.get().baseUrl;
-  const url = `${baseUrl}/${req.path}`;
+  const url = `${baseUrl}${req.path}`;
   const request = new Request(url, reqParams);
   const requestInit: RequestInit = {
     cache: req.cache,
