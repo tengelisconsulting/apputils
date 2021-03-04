@@ -1,4 +1,4 @@
-import createStore from "../createStore";
+import createStore, { Store } from "../createStore";
 
 
 interface State {
@@ -11,7 +11,7 @@ interface State {
   };
 }
 
-let store;
+let store: Store<State>;
 
 describe("createStore", () => {
   beforeEach(() => {
@@ -36,9 +36,12 @@ describe("createStore", () => {
       x,
     }));
     expect(changeCB).toHaveBeenCalledWith(100);
+    expect(store.getState().x).toBe(100);
     setX(10);
+    expect(store.getState().x).toBe(10);
     expect(changeCB).toHaveBeenCalledWith(10);
     setX(11);
+    expect(store.getState().x).toBe(11);
     expect(changeCB).toHaveBeenCalledWith(11);
   });
 
