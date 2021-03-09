@@ -58,10 +58,10 @@ export class Store<T> {
   }
 
   // convenience methods for updating
-  public shallowSet = (key: keyof T, val) => {
+  public shallowSet = <K extends keyof T>(key: K, val: T[K]) => {
     this.update((state) => ({
       ...state,
-      key: val,
+      [key]: val,
     }));
   };
 
