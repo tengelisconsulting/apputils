@@ -1,6 +1,5 @@
 export * from "./@types/http-types";
-export { HttpService } from "./service/http-service";
-export { AuthState } from "./state/auth-state";
-export { HttpState } from "./state/http-state";
+export { httpService } from "./service/http-service";
 
-export { makeState } from "./util/state";
+export { default as authStore } from "./state/auth-store";
+export { default as httpStore } from "./state/http-store";

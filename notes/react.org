@@ -1,0 +1,22 @@
+- using a store from React
+#+begin_src typescript
+import React from "react";
+import { Store } from "./createStore";
+
+
+const useSelector = <T, S>(
+  store: Store<T>,
+  selector: (state: T) => S
+) => {
+  const [localState, setLocalState] = React.useState(null);
+  React.useEffect(() => {
+    const subId = store.subscribe(
+      selector,
+      setLocalState
+    );
+    return () => store.unsubscribe(subId);
+  }, []);
+  return localState;
+}
+
+#+end_src

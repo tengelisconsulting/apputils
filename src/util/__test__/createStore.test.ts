@@ -27,7 +27,7 @@ describe("createStore", () => {
 
   it("should react to simple value changes appropriately", () => {
     const changeCB = jest.fn();
-    const subId = store.subscribe(
+    store.subscribe(
       (state) => state.x,
       changeCB,
     );
@@ -36,18 +36,18 @@ describe("createStore", () => {
       x,
     }));
     expect(changeCB).toHaveBeenCalledWith(100);
-    expect(store.getState().x).toBe(100);
+    expect(store.state.x).toBe(100);
     setX(10);
-    expect(store.getState().x).toBe(10);
+    expect(store.state.x).toBe(10);
     expect(changeCB).toHaveBeenCalledWith(10);
     setX(11);
-    expect(store.getState().x).toBe(11);
+    expect(store.state.x).toBe(11);
     expect(changeCB).toHaveBeenCalledWith(11);
   });
 
   it("should unsubscribe", () => {
     const changeCB = jest.fn();
-    const subId = store.subscribe(
+    const unsubscribe = store.subscribe(
       (state) => state.x,
       changeCB,
     );
@@ -59,7 +59,7 @@ describe("createStore", () => {
     setX(10);
     expect(changeCB).toHaveBeenCalledWith(10);
     changeCB.mockClear();
-    store.unsubscribe(subId);
+    unsubscribe();
     setX(11);
     expect(changeCB).not.toHaveBeenCalled();
   });

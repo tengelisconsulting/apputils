@@ -1,7 +1,8 @@
 import { AppHttpRequest, AppHttpResponse } from "../@types/http-types";
 import shallowMerge from "../util/obj";
-import { HttpState } from "../state/http-state";
-import { AuthState } from "../state/auth-state";
+import httpStore from "../state/http-store";
+import authStore from "../state/auth-store";
+
 
 
 const SET_SESSION_HEADER = "set-session-token";
@@ -15,7 +16,7 @@ const baseReqDefaults: Partial<AppHttpRequest> = {
 };
 
 const getAuthedHeaders = () => ({
-  "Authorization": `Bearer ${AuthState.get().sessionToken}`,
+  "Authorization": `Bearer ${authStore.state.sessionToken}`,
 });
 
 async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
@@ -39,7 +40,7 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
           : JSON.stringify(req.data)}
       : {},
   );
-  const baseUrl = HttpState.get().baseUrl;
+  const baseUrl = httpStore.state.baseUrl;
   const url = `${baseUrl}${req.path}`;
   const request = new Request(url, reqParams);
   const requestInit: RequestInit = {
@@ -52,9 +53,7 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
     // we check for an updated session header
     // on every successful request
     if (response.headers[SET_SESSION_HEADER]) {
-      AuthState.update({
-        sessionToken: response.headers[SET_SESSION_HEADER],
-      });
+      authStore.shallowSet("sessionToken", response.headers[SET_SESSION_HEADER]);
     }
     if (!response.ok) {
       return {
@@ -108,7 +107,7 @@ const requestFactoryNoData = (method: string) =>
     ) as AppHttpRequest
   );
 
-export const HttpService = {
+export const httpService = {
   httpGet: requestFactoryNoData("GET"),
   httpPost: requestFactoryWithData("POST"),
   httpPut: requestFactoryWithData("PUT"),
