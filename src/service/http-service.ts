@@ -1,11 +1,6 @@
 import { AppHttpRequest, AppHttpResponse } from "../@types/http-types";
 import shallowMerge from "../util/obj";
-import httpStore from "../state/http-store";
-import authStore from "../state/auth-store";
 
-
-
-const SET_SESSION_HEADER = "set-session-token";
 
 const baseReqDefaults: Partial<AppHttpRequest> = {
   cache: "default",
@@ -15,17 +10,13 @@ const baseReqDefaults: Partial<AppHttpRequest> = {
   },
 };
 
-const getAuthedHeaders = () => ({
-  "Authorization": `Bearer ${authStore.state.sessionToken}`,
-});
+const DEFAULT_HEADERS = {};
 
 async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
   const headers = new Headers(
     shallowMerge(
       req.headers,
-      req.noAuth
-        ? {}
-        : getAuthedHeaders()
+      DEFAULT_HEADERS,
     )
   );
   const reqParams = shallowMerge(
@@ -40,9 +31,7 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
           : JSON.stringify(req.data)}
       : {},
   );
-  const baseUrl = httpStore.state.baseUrl;
-  const url = `${baseUrl}${req.path}`;
-  const request = new Request(url, reqParams);
+  const request = new Request(req.path, reqParams);
   const requestInit: RequestInit = {
     cache: req.cache,
     mode: req.mode,
@@ -50,11 +39,6 @@ async function doRequest<T>(req: AppHttpRequest): Promise<AppHttpResponse<T>> {
   };
   try {
     const response = await fetch(request, requestInit);
-    // we check for an updated session header
-    // on every successful request
-    if (response.headers[SET_SESSION_HEADER]) {
-      authStore.shallowSet("sessionToken", response.headers[SET_SESSION_HEADER]);
-    }
     if (!response.ok) {
       return {
         status: response.status,

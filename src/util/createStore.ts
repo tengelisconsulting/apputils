@@ -67,8 +67,6 @@ export class Store<T> {
 
 }
 
-const createStore = <T>(
+export const createStore = <T>(
   initial: T
 ) => new Store<T>(initial);
-
-export default createStore;

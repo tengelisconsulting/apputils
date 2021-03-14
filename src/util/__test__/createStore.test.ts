@@ -1,4 +1,4 @@
-import createStore, { Store } from "../createStore";
+import { Store, createStore, } from "../createStore";
 
 
 interface State {
