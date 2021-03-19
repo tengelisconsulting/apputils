@@ -91,8 +91,35 @@ const requestFactoryNoData = (method: string) =>
     ) as AppHttpRequest
   );
 
+const requestFactoryQueryParams = (method: string) =>
+  <P, R>(path: string) =>
+  (queryParams: P): Promise<AppHttpResponse<R>> => {
+    function pathWIthQParams(){
+      if (!queryParams) {
+        return path;
+      }
+      const queryGenerator = new URLSearchParams();
+      Object.keys(queryParams).forEach((key) => {
+        queryGenerator.append(key, queryParams[key]);
+      });
+      const queryString = queryGenerator.toString();
+      return `${path}?${queryString}`;
+    }
+    return doRequest(
+      shallowMerge(
+        {},
+        baseReqDefaults,
+        {
+          method,
+          path: pathWIthQParams(),
+        },
+      ) as AppHttpRequest
+    );
+  };
+
 export const httpService = {
-  httpGet: requestFactoryNoData("GET"),
+  httpGetNoData: requestFactoryNoData("GET"),
+  httpGet: requestFactoryQueryParams("GET"),
   httpPost: requestFactoryWithData("POST"),
   httpPut: requestFactoryWithData("PUT"),
   httpPutNoData: requestFactoryNoData("PUT"),
