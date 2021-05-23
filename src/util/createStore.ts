@@ -41,7 +41,8 @@ export class Store<T> {
     subscriber: (value: S) => void,
     comparitor = vanillaEq,
   ): (() => void) => {
-    const id = Date.now().toString();
+    const id = Date.now().toString()
+      + Math.random().toString().slice(2, 7);
     let lastVal: S = selector(this.current);
     this.changeSubscribers[id] = (newState: T) => {
       const newVal: S = selector(newState);
